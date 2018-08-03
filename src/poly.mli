@@ -4,10 +4,11 @@ module type POLY =
     type indeterminates = string
     type degree = int
     type poly =
-      | Pnil
       | Poly of poly list * poly list * int
+                (* never let Poly be a member of Poly recursively. Could pose problems. *)
       | MonoPoly of coef * poly
       | Mono of coef * indeterminates * degree
+      | Pnil
     val reduce : poly -> poly
     val combine_mono : poly -> poly
     val return_discriminate : poly -> int * int

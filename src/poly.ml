@@ -2,10 +2,10 @@ let reduce t =
   let rec aux input reduced =
     if reduced <> true then
       match input with
-      | Pnil -> input
       | Poly(lhs,rhs,degree) -> (*do stuff*)
       | MonoPoly(coef,poly) -> (*again, more stuff*)
       | Mono(coef,indet,degree) -> (*treat as mono*)
+      | Pnil -> input
     else
       input
   in aux t false
