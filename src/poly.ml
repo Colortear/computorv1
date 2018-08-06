@@ -1,25 +1,20 @@
-let reduce t =
-  let rec aux input reduced =
-    if reduced <> true then
-      match input with
-      | Poly(lhs,rhs,degree) -> (*do stuff*)
-      | MonoPoly(coef,poly) -> (*again, more stuff*)
-      | Mono(coef,indet,degree) -> (*treat as mono*)
-      | Pnil -> input
-    else
-      input
-  in aux t false
-
 (* when combining there needs to be rules on how to determine
  * parenthetical sameness *)
 
-let combine_mono poly =
+let rec combine_mono poly =
   let rec fold_same_degree input =
-    (* do the things*)
+    match input with
+    | _ -> input
+    | [x] -> [x]
+    | Mono(coef,indet,deg)::(Mono(coef2,indet2,deg2)::tail as tl) ->
+      (*either add to coef and use the next part of the list as tl or use the next as tail. figure this out *)
+      if deg = deg2 then
+        Mono((coef2 + coef),indet2,deg2)::(combine_mono tail)
+      else
+        Mono(coef,indet,deg)::(combine_mon_poly tl)
   in
   match poly with
-  | Poly(lhs,rhs,deg) -> Poly((combine_mono lhs),(combine_mono rhs),deg)
-  | [x] -> fold_same_degree poly
+  | hd::tl -> fold_same_degree poly
   | _ -> poly
 
 let return_discriminate poly =
@@ -31,5 +26,29 @@ let get_degree poly =
   | Mono(_,_,degree) -> degree
   | _ -> 0
 
-let can_get_discriminate poly =
-  if get_degree poly < 3 then true else false
+let print_outcome poly disc =
+  print_string "Reduced form: ";
+  match poly with
+  | _ -> print_endline "Error."
+  | Poly(lhs,rhs,deg) ->
+    let rec aux input =
+      match input with
+      | [] -> ""
+      | Mono(coef,indet,degree)::tl ->
+        (*break apart *)
+
+let reduce t =
+  match input with
+  | MonoPoly(coef,poly) -> input
+  | Mono(coef,indet,degree) -> input
+  | Pnil -> input
+  | Poly(lhs,rhs,degree) -> 
+    let new_left = fold_same_degree lhs in
+    let new_right = fold_same_degree rhs in
+    let new_poly = balance_sides Poly(new_left,new_right,degree) in
+    let discriminate = if (get_degree new_poly) < 3 then
+        return_discriminate new_poly
+      else
+        "Cannot solve for discriminate."
+    in
+    print_outcome new_poly discriminate
